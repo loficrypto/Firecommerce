@@ -28,6 +28,7 @@ const Navbar = () => {
                 <Link to="/shop">Shop</Link>
                 {user ? (
                     <>
+                        <Link to="/profile">Profile</Link>
                         <Link to="/admin">Admin</Link>
                         <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition-colors duration-300">
                             Logout
