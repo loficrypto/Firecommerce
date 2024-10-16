@@ -9,6 +9,7 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Blog from './pages/Blog';  // Assuming we will add a Blog page
 import Navbar from './components/Navbar';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -52,6 +53,7 @@ const App = () => {
                 <Route path="/checkout">
                     <Checkout cartItems={cartItems} />
                 </Route>
+                <Route path="/blog" component={Blog} />  {/* Adding Blog route */}
             </Switch>
         </Router>
     );
