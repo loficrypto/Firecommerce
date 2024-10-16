@@ -22,19 +22,21 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="bg-blue-500 p-4 text-white flex justify-between">
+        <nav className="bg-blue-500 p-4 text-white flex justify-between items-center">
             <Link to="/" className="text-2xl font-bold">My Shop</Link>
-            <div>
-                <Link to="/shop" className="mr-4">Shop</Link>
+            <div className="flex space-x-4">
+                <Link to="/shop">Shop</Link>
                 {user ? (
                     <>
-                        <Link to="/admin" className="mr-4">Admin</Link>
-                        <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded">Logout</button>
+                        <Link to="/admin">Admin</Link>
+                        <button onClick={handleLogout} className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition-colors duration-300">
+                            Logout
+                        </button>
                     </>
                 ) : (
                     <>
-                        <Link to="/login" className="mr-4">Login</Link>
-                        <Link to="/register" className="mr-4">Register</Link>
+                        <Link to="/login">Login</Link>
+                        <Link to="/register">Register</Link>
                     </>
                 )}
             </div>
