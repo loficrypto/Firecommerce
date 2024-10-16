@@ -1,9 +1,8 @@
-// Shop.jsx
 import React, { useState, useEffect } from 'react';
 import { createInvoice } from '../utils/apirone';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
-import ProductCard from '../components/ProductCard';
+import ProductGrid from '../components/ProductGrid';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
@@ -31,11 +30,7 @@ const Shop = () => {
             {loading ? (
                 <p>Loading products...</p>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {products.map(product => (
-                        <ProductCard key={product.id} product={product} handlePurchase={handlePurchase} />
-                    ))}
-                </div>
+                <ProductGrid products={products} handlePurchase={handlePurchase} />
             )}
         </div>
     );
