@@ -7,6 +7,7 @@ import PurchaseHistory from '../components/PurchaseHistory';
 import TopUpHistory from '../components/TopUpHistory';
 import WalletBalance from '../components/WalletBalance';
 import Transactions from '../components/Transactions';
+import { createInvoice, checkPaymentStatus, forwardPayment } from '../utils/apirone';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
@@ -17,6 +18,8 @@ const Profile = () => {
         walletBalance: 0,
     });
     const [topUpAmount, setTopUpAmount] = useState('');
+    const [topUpCurrency, setTopUpCurrency] = useState('usdt');
+    const [loading, setLoading] = useState(false);
     const history = useHistory();
 
     useEffect(() => {
@@ -37,10 +40,31 @@ const Profile = () => {
 
     const handleTopUp = async (e) => {
         e.preventDefault();
-        const newBalance = profileData.walletBalance + parseFloat(topUpAmount);
-        await updateDoc(doc(db, 'users', auth.currentUser.uid), { walletBalance: newBalance });
-        setProfileData((prevData) => ({ ...prevData, walletBalance: newBalance }));
-        setTopUpAmount('');
+        setLoading(true);
+        try {
+            const callbackUrl = `${window.location.origin}/api/topup-callback`;
+            const { id, address } = await createInvoice(parseFloat(topUpAmount), topUpCurrency, callbackUrl);
+            alert(`Please send ${topUpAmount} ${topUpCurrency.toUpperCase()} to the following address: ${address}`);
+            // Wait for the payment to be confirmed and forwarded
+            const interval = setInterval(async () => {
+                const status = await checkPaymentStatus(id);
+                if (status.paid) {
+                    await forwardPayment(id, 'your-destination-address');
+                    clearInterval(interval);
+                    const newBalance = profileData.walletBalance + parseFloat(topUpAmount);
+                    await updateDoc(doc(db, 'users', auth.currentUser.uid), { walletBalance: newBalance });
+                    setProfileData((prevData) => ({ ...prevData, walletBalance: newBalance }));
+                    setTopUpAmount('');
+                    setTopUpCurrency('usdt');
+                    setLoading(false);
+                    alert('Top-up successful!');
+                }
+            }, 10000); // Check every 10 seconds
+        } catch (error) {
+            console.error("Error during top-up", error);
+            setLoading(false);
+            alert('Top-up failed. Please try again.');
+        }
     };
 
     if (!user) return null;
@@ -62,11 +86,26 @@ const Profile = () => {
                             min="0"
                             step="0.01"
                         />
+                    </div>
+                    <div>
+                        <label className="block">Currency</label>
+                        <select
+                            value={topUpCurrency}
+                            onChange={(e) => setTopUpCurrency(e.target.value)}
+                            className="border p-2 rounded w-full"
+                        >
+                            <option value="usdt">USDT</option>
+                            <option value="btc">BTC</option>
+                            <option value="ltc">LTC</option>
+                        </select>
+                    </div>
+                    <div>
                         <button
                             type="submit"
                             className="mt-2 bg-blue-500 text-white py-2 px-4 rounded"
+                            disabled={loading}
                         >
-                            Top-Up Wallet
+                            {loading ? 'Processing...' : 'Top-Up Wallet'}
                         </button>
                     </div>
                 </form>
