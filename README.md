@@ -152,3 +152,77 @@ app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
 ```
+### Database Structure for React Project
+Users Collection
+
+Document ID: User ID (UID)
+
+email: string
+
+walletBalance: number
+
+purchases: array
+
+productId: string
+
+amount: number
+
+date: string
+
+productFile: string
+
+topUps: array
+
+amount: number
+
+date: string
+
+transactions: array
+
+type: string (purchase/top-up)
+
+amount: number
+
+date: string
+
+Products Collection
+
+Document ID: Product ID
+
+name: string
+
+description: string
+
+price: number
+
+imageUrl: string
+
+productFile: string
+
+Orders Collection
+
+Document ID: Order ID
+
+userId: string
+
+items: array
+
+productId: string
+
+name: string
+
+price: number
+
+totalAmount: number
+
+date: string
+
+BlogPosts Collection
+
+Document ID: Blog Post ID
+
+title: string
+
+content: string
+
+imageUrl: string
