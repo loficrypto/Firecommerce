@@ -8,6 +8,7 @@ const PurchaseHistory = ({ purchases }) => (
                 {purchases.map((purchase, index) => (
                     <li key={index} className="border-b py-2">
                         {purchase.productName} - ${purchase.amount} - {purchase.date}
+                        <a href={purchase.downloadURL} className="ml-4 text-blue-500" target="_blank" rel="noopener noreferrer">Download</a>
                     </li>
                 ))}
             </ul>
