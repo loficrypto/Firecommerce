@@ -1,16 +1,21 @@
+// Shop.jsx
 import React, { useState, useEffect } from 'react';
 import { createInvoice } from '../utils/apirone';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import ProductCard from '../components/ProductCard';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoading(true);
             const querySnapshot = await getDocs(collection(db, 'products'));
             const productsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setProducts(productsList);
+            setLoading(false);
         };
         fetchProducts();
     }, []);
@@ -23,19 +28,15 @@ const Shop = () => {
     return (
         <div className="min-h-screen bg-gray-100 p-4">
             <h1 className="text-3xl font-bold mb-4">Shop</h1>
-            {/* List and select products */}
-            {products.map(product => (
-                <div key={product.id} className="bg-white p-4 rounded shadow mb-4">
-                    <h2 className="text-2xl font-semibold">{product.name}</h2>
-                    <p className="text-lg">{product.description}</p>
-                    <button
-                        onClick={() => handlePurchase(product)}
-                        className="mt-2 bg-blue-500 text-white py-2 px-4 rounded"
-                    >
-                        Buy with USDT
-                    </button>
+            {loading ? (
+                <p>Loading products...</p>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {products.map(product => (
+                        <ProductCard key={product.id} product={product} handlePurchase={handlePurchase} />
+                    ))}
                 </div>
-            ))}
+            )}
         </div>
     );
 };
