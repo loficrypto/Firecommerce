@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { createInvoice } from '../utils/apirone';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import ProductGrid from '../components/ProductGrid';
 
-const Shop = () => {
+const Shop = ({ handleAddToCart }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -19,19 +18,16 @@ const Shop = () => {
         fetchProducts();
     }, []);
 
-    const handlePurchase = async (product) => {
-        const invoice = await createInvoice('USDT', product.price, 'https://your-callback-url.com');
-        // Handle the invoice
-    };
-
     return (
-        <div className="min-h-screen bg-gray-100 p-4">
-            <h1 className="text-3xl font-bold mb-4">Shop</h1>
-            {loading ? (
-                <p>Loading products...</p>
-            ) : (
-                <ProductGrid products={products} handlePurchase={handlePurchase} />
-            )}
+        <div className="min-h-screen bg-gray-100 py-8">
+            <div className="container mx-auto px-4">
+                <h1 className="text-4xl font-bold text-center mb-8">Shop</h1>
+                {loading ? (
+                    <p className="text-center">Loading products...</p>
+                ) : (
+                    <ProductGrid products={products} handleAddToCart={handleAddToCart} />
+                )}
+            </div>
         </div>
     );
 };
