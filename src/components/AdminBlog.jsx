@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { db, storage } from '../firebase';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
 import AdminBlogForm from './AdminBlogForm';
 
 const AdminBlog = () => {
@@ -8,19 +9,21 @@ const AdminBlog = () => {
 
     useEffect(() => {
         const fetchPosts = async () => {
-            const postsSnapshot = await getDocs(collection(db, 'blogPosts'));
+            const postsSnapshot = await getDocs(collection(db, 'posts'));
             setPosts(postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         };
 
         fetchPosts();
     }, []);
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id, imageUrl) => {
         try {
-            await deleteDoc(doc(db, 'blogPosts', id));
+            await deleteDoc(doc(db, 'posts', id));
+            const imageRef = ref(storage, imageUrl);
+            await deleteObject(imageRef);
             setPosts(posts.filter(post => post.id !== id));
         } catch (error) {
-            console.error("Error deleting blog post", error);
+            console.error("Error deleting post", error);
         }
     };
 
@@ -34,7 +37,7 @@ const AdminBlog = () => {
                         <li key={post.id} className="border-b py-2 flex justify-between items-center">
                             {post.title}
                             <button
-                                onClick={() => handleDelete(post.id)}
+                                onClick={() => handleDelete(post.id, post.imageUrl)}
                                 className="bg-red-500 text-white px-4 py-2 rounded"
                             >
                                 Delete
