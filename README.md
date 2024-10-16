@@ -56,7 +56,7 @@ Let's go through a detailed overview of your ecommerce project, which includes f
 - Payment Integration: Apirone API for handling cryptocurrency transactions.
 
 ### Project Directory Structure
-
+```
 src/
 ├── components/
 │   ├── AdminEmails.jsx
@@ -86,7 +86,7 @@ src/
 ├── firebase.js
 ├── index.css
 ├── main.jsx
-
+```
 
 ### Firebase Firestore Rules
 
