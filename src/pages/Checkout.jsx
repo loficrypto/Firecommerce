@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '../firebase';
+import { auth, db, storage } from '../firebase';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { useHistory } from 'react-router-dom';
+import { sendEmail } from '../utils/emailService';
 
 const Checkout = ({ cartItems }) => {
     const [form, setForm] = useState({ name: '', email: '', address: '' });
@@ -57,9 +59,24 @@ const Checkout = ({ cartItems }) => {
             const newBalance = walletBalance - totalAmount;
             await updateDoc(doc(db, 'users', auth.currentUser.uid), { walletBalance: newBalance });
 
+            // Send product download links via email
+            const productLinks = await Promise.all(cartItems.map(async (item) => {
+                const productRef = ref(storage, item.imageUrl);
+                const downloadURL = await getDownloadURL(productRef);
+                return `${item.name}: ${downloadURL}`;
+            }));
+
+            const emailContent = `
+                Dear ${form.name},
+                Thank you for your purchase! Here are your product download links:
+                ${productLinks.join('\n')}
+            `;
+
+            await sendEmail(form.email, 'Your Purchase - Product Download Links', emailContent);
+
             // Clear cart and show success message
             cartItems.length = 0;
-            setSuccessMessage('Purchase successful! Your order has been placed.');
+            setSuccessMessage('Purchase successful! Your order has been placed. Check your email for download links.');
         } catch (error) {
             setError('Failed to complete purchase. Please try again.');
             console.error("Error during checkout:", error);
