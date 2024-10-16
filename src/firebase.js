@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -18,4 +18,23 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 
-export { auth, db, storage, googleProvider };
+const initializeUserWallet = async (uid) => {
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) {
+        await setDoc(userRef, { balance: 0 });
+    }
+};
+
+const getUserBalance = async (uid) => {
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    return userSnap.exists() ? userSnap.data().balance : 0;
+};
+
+const updateUserBalance = async (uid, amount) => {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { balance: amount });
+};
+
+export { auth, db, storage, googleProvider, initializeUserWallet, getUserBalance, updateUserBalance };
