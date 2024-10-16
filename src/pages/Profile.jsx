@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '../firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { auth, db, storage } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { useHistory } from 'react-router-dom';
 import ProfileDetails from '../components/ProfileDetails';
 import PurchaseHistory from '../components/PurchaseHistory';
 import TopUpHistory from '../components/TopUpHistory';
 import WalletBalance from '../components/WalletBalance';
 import Transactions from '../components/Transactions';
-import { createInvoice, checkPaymentStatus, forwardPayment } from '../utils/apirone';
+import { ref, getDownloadURL } from 'firebase/storage';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
@@ -27,7 +27,13 @@ const Profile = () => {
             if (auth.currentUser) {
                 const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
                 if (userDoc.exists()) {
-                    setProfileData(userDoc.data());
+                    const userData = userDoc.data();
+                    const purchaseLinks = await Promise.all(userData.purchases.map(async purchase => {
+                        const productRef = ref(storage, purchase.productFile);
+                        const downloadURL = await getDownloadURL(productRef);
+                        return { ...purchase, downloadURL };
+                    }));
+                    setProfileData({ ...userData, purchases: purchaseLinks });
                 }
                 setUser(auth.currentUser);
             } else {
