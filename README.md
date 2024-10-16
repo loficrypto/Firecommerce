@@ -155,74 +155,39 @@ app.listen(3000, () => {
 ### Database Structure for React Project
 Users Collection
 
-Document ID: User ID (UID)
+users (collection)
+  ├── userId1 (document)
+  │   ├── email: "user1@example.com"
+  │   ├── walletBalance: 100.0
+  │   ├── purchases: [ { productId: "productId1", date: "2023-01-01" } ]
+  │   ├── topUps: [ { amount: 50.0, date: "2023-01-01" } ]
+  │   ├── transactions: [ { amount: 50.0, date: "2023-01-01" } ]
+  ├── userId2 (document)
+  │   ├── ...
+  
+products (collection)
+  ├── productId1 (document)
+  │   ├── name: "Product 1"
+  │   ├── description: "Description 1"
+  │   ├── price: 20.0
+  │   ├── imageUrl: "url_to_image"
+  │   ├── productFile: "url_to_file"
+  ├── productId2 (document)
+  │   ├── ...
 
-email: string
+orders (collection)
+  ├── orderId1 (document)
+  │   ├── userId: "userId1"
+  │   ├── items: [ { productId: "productId1", quantity: 1 } ]
+  │   ├── totalAmount: 20.0
+  │   ├── date: "2023-01-01"
+  ├── orderId2 (document)
+  │   ├── ...
 
-walletBalance: number
-
-purchases: array
-
-productId: string
-
-amount: number
-
-date: string
-
-productFile: string
-
-topUps: array
-
-amount: number
-
-date: string
-
-transactions: array
-
-type: string (purchase/top-up)
-
-amount: number
-
-date: string
-
-Products Collection
-
-Document ID: Product ID
-
-name: string
-
-description: string
-
-price: number
-
-imageUrl: string
-
-productFile: string
-
-Orders Collection
-
-Document ID: Order ID
-
-userId: string
-
-items: array
-
-productId: string
-
-name: string
-
-price: number
-
-totalAmount: number
-
-date: string
-
-BlogPosts Collection
-
-Document ID: Blog Post ID
-
-title: string
-
-content: string
-
-imageUrl: string
+blogPosts (collection)
+  ├── postId1 (document)
+  │   ├── title: "Post 1"
+  │   ├── content: "Content 1"
+  │   ├── imageUrl: "url_to_image"
+  ├── postId2 (document)
+  │   ├── ...
