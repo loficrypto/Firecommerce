@@ -11,6 +11,8 @@ const Admin = () => {
     const [productDescription, setProductDescription] = useState('');
     const [productPrice, setProductPrice] = useState(0);
     const [productImage, setProductImage] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const history = useHistory();
 
     useEffect(() => {
@@ -27,23 +29,34 @@ const Admin = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!productImage) return;
+        setErrorMessage('');
+        setSuccessMessage('');
+        if (!productImage) {
+            setErrorMessage('Please upload a product image');
+            return;
+        }
 
-        const storageRef = ref(storage, `products/${productImage.name}`);
-        await uploadBytes(storageRef, productImage);
-        const imageUrl = await getDownloadURL(storageRef);
+        try {
+            const storageRef = ref(storage, `products/${productImage.name}`);
+            await uploadBytes(storageRef, productImage);
+            const imageUrl = await getDownloadURL(storageRef);
 
-        await addDoc(collection(db, 'products'), {
-            name: productName,
-            description: productDescription,
-            price: productPrice,
-            imageUrl
-        });
+            await addDoc(collection(db, 'products'), {
+                name: productName,
+                description: productDescription,
+                price: productPrice,
+                imageUrl
+            });
 
-        setProductName('');
-        setProductDescription('');
-        setProductPrice(0);
-        setProductImage(null);
+            setProductName('');
+            setProductDescription('');
+            setProductPrice(0);
+            setProductImage(null);
+            setSuccessMessage('Product added successfully!');
+        } catch (error) {
+            setErrorMessage('Failed to add product');
+            console.error("Error adding product", error);
+        }
     };
 
     if (!user) return null;
@@ -51,6 +64,8 @@ const Admin = () => {
     return (
         <div className="min-h-screen bg-gray-100 p-4">
             <h1 className="text-3xl font-bold">Admin Panel</h1>
+            {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
+            {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
             <form onSubmit={handleSubmit} className="mt-4">
                 <div>
                     <label className="block">Product Name</label>
