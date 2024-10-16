@@ -154,7 +154,7 @@ app.listen(3000, () => {
 ```
 ### Database Structure for React Project
 Users Collection
-
+```
 users (collection)
   ├── userId1 (document)
   │   ├── email: "user1@example.com"
@@ -191,3 +191,4 @@ blogPosts (collection)
   │   ├── imageUrl: "url_to_image"
   ├── postId2 (document)
   │   ├── ...
+```
